@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RailYatra - Premium Railway Reservation</title>
+  
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  
+    <header>
+        <div class="logo">
+            <span>🚆</span> RailYatra
+        </div>
+        <nav class="nav-links">
+            <button onclick="app.navigate('home')">Search Trains</button>
+            <button onclick="app.navigate('my-bookings')">My Bookings</button>
+        </nav>
+    </header>
+
+  
+    <main id="app">
+        
+  
+        <section id="home" class="active">
+            <div class="search-container">
+                <h2>Find Your Train</h2>
+                <form id="search-form" onsubmit="app.handleSearch(event)">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="from">From</label>
+                            <select id="from" required>
+                                <option value="New Delhi">New Delhi</option>
+                                <option value="Mumbai Central">Mumbai Central</option>
+                                <option value="Chennai Central">Chennai Central</option>
+                                <option value="Kolkata Howrah">Kolkata Howrah</option>
+                                <option value="Bangalore City">Bangalore City</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="to">To</label>
+                            <select id="to" required>
+                                <option value="Mumbai Central">Mumbai Central</option>
+                                <option value="New Delhi">New Delhi</option>
+                                <option value="Chennai Central">Chennai Central</option>
+                                <option value="Kolkata Howrah">Kolkata Howrah</option>
+                                <option value="Bangalore City">Bangalore City</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="date">Date of Journey</label>
+                            <input type="date" id="date" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="class">Class</label>
+                            <select id="class">
+                                <option value="Sleeper">Sleeper (SL)</option>
+                                <option value="AC 3 Tier">AC 3 Tier (3A)</option>
+                                <option value="AC 2 Tier">AC 2 Tier (2A)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn-primary">Search Trains</button>
+                </form>
+            </div>
+        </section>
+
+     
+        <section id="results">
+            <h2>Available Trains</h2>
+            <div id="train-list">
+                <!-- Train cards injected here by JS -->
+            </div>
+            <button onclick="app.navigate('home')" class="btn-secondary">Back to Search</button>
+        </section>
+
+    
+        <section id="seat-selection">
+            <h2>Select Seats</h2>
+            <div class="seat-selection-container">
+                <div class="legend">
+                    <div class="legend-item">
+                        <div class="seat-sample" style="background:var(--seat-available)"></div> Available
+                    </div>
+                    <div class="legend-item">
+                        <div class="seat-sample" style="background:var(--seat-selected)"></div> Selected
+                    </div>
+                    <div class="legend-item">
+                        <div class="seat-sample" style="background:var(--seat-occupied)"></div> Occupied
+                    </div>
+                </div>
+
+                <h3 id="selected-train-name"></h3>
+                
+                <div id="seat-map" class="seat-map">
+                    <!-- Seats injected here -->
+                </div>
+
+                <div class="seat-summary">
+                    <div>
+                        Selected Seats: <strong id="selected-seats-display">None</strong>
+                    </div>
+                    <div>
+                        Total Price: <strong id="total-price">₹0</strong>
+                    </div>
+                </div>
+
+                <div class="action-buttons">
+                    <button class="btn-primary" onclick="app.proceedToBooking()">Proceed to Book</button>
+                    <button class="btn-secondary" onclick="app.navigate('results')">Cancel</button>
+                </div>
+            </div>
+        </section>
+
+        <section id="booking-form">
+            <h2>Passenger Details</h2>
+            <div class="booking-form">
+                <form onsubmit="app.confirmBooking(event)">
+                    <div class="form-group">
+                        <label>Full Name</label>
+                        <input type="text" id="p-name" required placeholder="Enter passenger name">
+                    </div>
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" id="p-email" required placeholder="Enter email address">
+                    </div>
+                    <div class="form-group">
+                        <label>Age</label>
+                        <input type="number" id="p-age" min="1" max="120" required placeholder="Age">
+                    </div>
+                    
+                    <div class="booking-summary">
+                        <p><strong>Train:</strong> <span id="summary-train"></span></p>
+                        <p><strong>Seats:</strong> <span id="summary-seats"></span></p>
+                        <p><strong>Total Amount:</strong> <span id="summary-price"></span></p>
+                    </div>
+
+                    <button type="submit" class="btn-primary">Confirm & Pay</button>
+                    <button type="button" class="btn-link" onclick="app.navigate('seat-selection')">Back</button>
+                </form>
+            </div>
+        </section>
+
+      
+        <section id="ticket-view">
+            <div class="ticket">
+                <div class="ticket-header">
+                    <h3>Booking Confirmed!</h3>
+                    <p>Ticket ID: <span id="ticket-id"></span></p>
+                </div>
+                <div class="ticket-body">
+                    <div class="ticket-row">
+                        <span class="ticket-label">Passenger</span>
+                        <span class="ticket-value" id="ticket-name"></span>
+                    </div>
+                    <div class="ticket-row">
+                        <span class="ticket-label">Train</span>
+                        <span class="ticket-value" id="ticket-train"></span>
+                    </div>
+                    <div class="ticket-row">
+                        <span class="ticket-label">Date</span>
+                        <span class="ticket-value" id="ticket-date"></span>
+                    </div>
+                    <div class="ticket-row">
+                        <span class="ticket-label">Seats</span>
+                        <span class="ticket-value" id="ticket-seats"></span>
+                    </div>
+                    <div class="ticket-row">
+                        <span class="ticket-label">Total Paid</span>
+                        <span class="ticket-value price-highlight" id="ticket-price"></span>
+                    </div>
+                </div>
+                <div class="ticket-actions">
+                    <button class="btn-primary" onclick="app.navigate('my-bookings')">View My Bookings</button>
+                    <button class="btn-link" onclick="app.navigate('home')">Book Another</button>
+                </div>
+            </div>
+        </section>
+
+
+        <section id="my-bookings">
+            <h2>My Bookings</h2>
+            <div id="bookings-list">
+                <!-- Past bookings injected here -->
+            </div>
+            <button onclick="app.navigate('home')" class="btn-secondary">Back to Home</button>
+        </section>
+
+    </main>
+
+ 
+    <footer>
+        <p>&copy; 2023 RailYatra Systems. All rights reserved.</p>
+    </footer>
+
+   
+    <div id="toast-container"></div>
+
+  
+    <script src="script.js"></script>
+</body>
+</html>
